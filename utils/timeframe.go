@@ -9,9 +9,10 @@ import (
 )
 
 const (
-	Day  = 24 * time.Hour
-	Week = 7 * Day
-	Year = 365 * Day
+	Day   = 24 * time.Hour
+	Week  = 7 * Day
+	Month = 4 * Week
+	Year  = 365 * Day
 )
 
 var timeframeDefs = []Timeframe{
@@ -22,6 +23,8 @@ var timeframeDefs = []Timeframe{
 	{"H", time.Hour},
 	{"D", Day},
 	{"W", Week},
+	{"M", Month},
+	{"Q", 3 * Month},
 	{"Y", Year},
 }
 
@@ -37,6 +40,13 @@ var Timeframes = []*Timeframe{
 	{"4H", 4 * time.Hour},
 	{"2H", 2 * time.Hour},
 	{"1D", Day},
+	{"1W", Week},
+	{"1M", Month},
+	{"1Q", 3 * Month},
+	{"2Q", 6 * Month},
+	{"1Y", Year},
+	{"2Y", 2 * Year},
+	{"5Y", 5 * Year},
 	// {"24H", 24 * time.Hour},
 }
 
@@ -212,7 +222,7 @@ func (cd *CandleDuration) Duration() time.Duration {
 	return cd.duration
 }
 
-var timeFrameRegex = regexp.MustCompile(`(\d+)(Sec|Min|H|D|W|M|Y)`)
+var timeFrameRegex = regexp.MustCompile(`(\d+)(Sec|Min|H|D|W|M|Q|Y)`)
 
 func CandleDurationFromString(tf string) (cd *CandleDuration, err error) {
 	groups := timeFrameRegex.FindStringSubmatch(tf)
@@ -238,5 +248,7 @@ var suffixDefs = map[string]time.Duration{
 	"H":   time.Hour,
 	"D":   Day,
 	"W":   Week,
+	"M":   4 * Week,
+	"Q":   3 * Month,
 	"Y":   Year,
 }
