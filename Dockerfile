@@ -26,7 +26,7 @@ FROM alpine:3.23
 WORKDIR /
 
 RUN apk update && \
-    apk --no-cache add ca-certificates tar curl
+    apk --no-cache add ca-certificates tar curl tzdata
 
 COPY --from=builder /go/src/github.com/alpacahq/marketstore/marketstore /bin/
 COPY --from=builder /go/bin /bin/
