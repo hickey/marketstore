@@ -13,7 +13,10 @@ import (
 )
 
 // flagPrintVersion set flag to show current marketstore version.
-var flagPrintVersion bool
+var (
+  flagPrintVersion bool
+  flagDebug bool
+)
 
 // Execute builds the command tree and executes commands.
 func Execute() error {
@@ -28,6 +31,11 @@ func Execute() error {
 				log.Info("utc build time: %+v\n", utils.BuildStamp)
 				return nil
 			}
+
+			if flagDebug {
+				log.SetLevel(log.DEBUG)
+			}
+
 			// Print information regarding usage.
 			return cmd.Usage()
 		},
@@ -40,6 +48,7 @@ func Execute() error {
 	c.AddCommand(tool.Cmd)
 	c.AddCommand(connect.Cmd)
 	c.Flags().BoolVarP(&flagPrintVersion, "version", "v", false, "show the version info and exit")
+	c.Flags().BoolVarP(&flagDebug, "debug", "d", false, "enable debug output")
 
 	return c.Execute()
 }
