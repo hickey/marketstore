@@ -14,6 +14,7 @@ import (
 	"github.com/alpacahq/marketstore/v4/sqlparser"
 	"github.com/alpacahq/marketstore/v4/utils"
 	"github.com/alpacahq/marketstore/v4/utils/io"
+	"github.com/alpacahq/marketstore/v4/utils/log"
 )
 
 // GRPCService is the implementation of GRPC API for Marketstore.
@@ -40,6 +41,8 @@ func NewGRPCService(rootDir string, catDir *catalog.Directory, aggRunner *sqlpar
 }
 
 func (s GRPCService) Query(_ context.Context, reqs *proto.MultiQueryRequest) (*proto.MultiQueryResponse, error) {
+	log.Debug("Query(%+v)", reqs)
+
 	response := proto.MultiQueryResponse{}
 	response.Version = utils.GitHash
 	response.Timezone = utils.InstanceConfig.Timezone.String()
@@ -89,6 +92,10 @@ func (s GRPCService) Query(_ context.Context, reqs *proto.MultiQueryRequest) (*p
 			RecordFormat := dest.GetItemInCategory("AttributeGroup")
 			Timeframe := dest.GetItemInCategory("Timeframe")
 			Symbols := dest.GetMultiItemInCategory("Symbol")
+
+			log.Debug("Query::RecordFormat = %+v", RecordFormat)
+			log.Debug("Query::TimeFrame = %+v", Timeframe)
+			log.Debug("Query::Symbols = %+v", Symbols)
 
 			if len(Timeframe) == 0 || len(RecordFormat) == 0 || len(Symbols) == 0 {
 				return nil, fmt.Errorf("destinations must have a Symbol, Timeframe and AttributeGroup, have: %s",

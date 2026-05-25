@@ -203,9 +203,13 @@ func (q *Query) AddTimeQual(timeQual TimeQualFunc) {
 func (q *Query) Parse() (pr *ParseResult, err error) {
 	// Check to see that the categories in the query are present in the DB directory
 	categorySet, err := q.DataDir.GatherCategoriesFromCache()
+	log.Debug("categorySet = %+v", categorySet)
+
 	if err != nil {
 		return nil, fmt.Errorf("gather categories from cache: %w", err)
 	}
+
+	log.Debug("GetRestirctionMap() = %+v", q.Restriction.GetRestrictionMap())
 	for key := range q.Restriction.GetRestrictionMap() {
 		if _, ok := categorySet[key]; !ok {
 			return nil, fmt.Errorf("category: %s not in catalog", key)

@@ -149,6 +149,7 @@ EVAL:
 
 	for prefix, cmdFunc := range commandMap(c) {
 		if strings.HasPrefix(line, prefix) {
+			log.Debug("Processing: %+v", line)
 			if err2 := cmdFunc(line); err2 != nil {
 				_, _ = fmt.Fprintf(os.Stderr, "error: %s", err2.Error())
 			}

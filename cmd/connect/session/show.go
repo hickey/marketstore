@@ -21,6 +21,10 @@ func (c *Client) show(line string) error {
 		return nil
 	}
 	tbk, start, end := c.parseQueryArgs(args)
+	log.Debug("tbk = %+v", tbk)
+	log.Debug("start = %+v", start)
+	log.Debug("end = %+v", end)
+
 	if tbk == nil {
 		log.Error(`Could not parse arguments, see "\help show" `)
 		return nil
@@ -29,6 +33,7 @@ func (c *Client) show(line string) error {
 	timeStart := time.Now()
 
 	csm, err := c.apiClient.Show(tbk, start, end)
+	log.Debug("csm = %+v", csm)
 	if err != nil {
 		log.Error(err.Error())
 		return fmt.Errorf("show command failed: %w", err)
