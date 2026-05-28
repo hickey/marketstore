@@ -269,6 +269,7 @@ func (q *Query) Parse() (pr *ParseResult, err error) {
 
 	// ParseConfig the query in the first pass by finding qualified files
 	pr = NewParseResult()
+	log.Debug("Parse:initial ParseResult = %+v", pr)
 	pr.RootDir = q.DataDir.GetPath()
 	/*
 		Recurse the directory to produce the QualifiedFiles set
@@ -325,5 +326,6 @@ func (q *Query) Parse() (pr *ParseResult, err error) {
 			utils.InstanceConfig.Timezone)
 	}
 	pr.TimeQuals = q.TimeQuals
+	log.Debug("Parse:ParseResults = %+v", pr)
 	return pr, nil
 }

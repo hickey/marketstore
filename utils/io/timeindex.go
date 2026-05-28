@@ -33,9 +33,10 @@ func TimeToIndex(t time.Time, tf time.Duration) int64 {
 	tLocal := ToSystemTimezone(t)
 	// special 1D case (maximum supported on-disk size)
 	if tf == utils.Day {
-		return int64(tLocal.YearDay() - 1)
+		return int64(tLocal.YearDay() - 1)    // already 0-based, leave as is
 	}
-	return 1 + tLocal.Sub(
+	// Remove the +1 to make this 0-based like the daily case
+	return tLocal.Sub(
 		time.Date(
 			tLocal.Year(),
 			time.January,
@@ -48,7 +49,7 @@ func EpochToIndex(epoch int64, tf time.Duration) int64 {
 }
 
 func TimeToOffset(t time.Time, tf time.Duration, recordSize int32) int64 {
-	return (TimeToIndex(t, tf)-1)*int64(recordSize) + Headersize
+	return (TimeToIndex(t, tf))*int64(recordSize) + Headersize
 }
 
 func IndexToOffset(index int64, recordSize int32) int64 {

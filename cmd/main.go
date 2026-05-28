@@ -34,6 +34,7 @@ func Execute() error {
 
 			if flagDebug {
 				log.SetLevel(log.DEBUG)
+				log.Info("Debug logging turned on")
 			}
 
 			// Print information regarding usage.
@@ -48,7 +49,7 @@ func Execute() error {
 	c.AddCommand(tool.Cmd)
 	c.AddCommand(connect.Cmd)
 	c.Flags().BoolVarP(&flagPrintVersion, "version", "v", false, "show the version info and exit")
-	c.Flags().BoolVarP(&flagDebug, "debug", "d", false, "enable debug output")
+	c.PersistentFlags().BoolVarP(&flagDebug, "debug", "D", false, "enable debug output")
 
 	return c.Execute()
 }

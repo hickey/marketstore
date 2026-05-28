@@ -68,6 +68,13 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	if dir != "" && url != "" {
 		return errors.New("cannot connect to database, use a flag to set location")
 	}
+
+  debug, _ := cmd.Flags().GetBool("debug")
+	if debug {
+		log.SetLevel(log.DEBUG)
+		log.Info("Debug logging turned on")
+	}
+
 	return nil
 }
 

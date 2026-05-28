@@ -181,6 +181,7 @@ func NewRowSeries(
 	}
 	rows := NewRows(dataShape, data)
 	rows.SetRowLen(rowLen)
+	log.Debug("rowseries.NewRowSeries:rows = %+v", rows)
 	return &RowSeries{
 		metadataKey: key,
 		rows:        rows,

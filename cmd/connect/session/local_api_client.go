@@ -81,7 +81,7 @@ func (lc *LocalAPIClient) Show(tbk *io.TimeBucketKey, start, end *time.Time,
 	if end == nil {
 		end = &planner.MaxTime
 	}
-	log.Info("Query range: %v to %v\n", start, end)
+	log.Info("Show.Query:range: %v to %v\n", start, end)
 
 	qs := frontend.NewQueryService(lc.catalogDir)
 	csm, err = qs.ExecuteQuery(tbk, *start, *end, 0, false, nil)

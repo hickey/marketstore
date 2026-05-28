@@ -111,6 +111,10 @@ func NewIOPlan(fl SortedFileList, limit *planner.RowLimit, range2 *planner.DateR
 					file.File.GetTimeframe(),
 					file.File.GetRecordLength()) + int64(file.File.GetRecordLength())
 			}
+			log.Debug("scanner.NewIOPlan: file = %+v", int(file.File.Year))
+			log.Debug("scanner.NewIOPlan: startOffset = %+v", startOffset)
+			log.Debug("scanner.NewIOPlan: endOffset = %+v", endOffset)
+
 			length = endOffset - startOffset
 			// Limit the scan to the end of the fixed length data
 			if length > maxLength {
@@ -189,10 +193,15 @@ func (r *Reader) Read() (csm utilsio.ColumnSeriesMap, err error) {
 	rtMap := r.pr.GetRecordType()
 	dsMap := r.pr.GetDataShapes()
 	rlMap := r.pr.GetRowLen()
+	log.Debug("scanner.Read:r = %+v", r)
+	log.Debug("scanner.Read:rtMap = %+v", rtMap)
+	log.Debug("scanner.Read:dsMap = %+v", dsMap)
+	log.Debug("scanner.Read:rlMap = %+v", rlMap)
 	for key, iop := range r.IOPMap {
 		rt := rtMap[key]
 		rlen := rlMap[key]
 		buffer, err2 := r.read(iop)
+  	log.Debug("scanner.Read:buffer = %+v", buffer)
 		if err2 != nil {
 			return nil, err2
 		}
@@ -201,7 +210,11 @@ func (r *Reader) Read() (csm utilsio.ColumnSeriesMap, err error) {
 			buffer = trimResultsToLimit(r.pr.Limit, rlen, buffer)
 		}
 		rs := utilsio.NewRowSeries(key, buffer, dsMap[key], rlen, rt)
+	  log.Debug("scanner.Read:rs = %+v", rs)
+
 		key, cs := rs.ToColumnSeries()
+		log.Debug("scanner.Read:cs = %+v", cs)
+
 		csm[key] = cs
 	}
 	return csm, err
@@ -283,8 +296,11 @@ func (r *Reader) read(iop *IOPlan) ([]byte, error) {
 	// which is the common io size on most of the storage/filesystem.
 	maxToBuffer := recordsPerRead * iop.RecordLen
 	readBuffer := r.readBuffer[:maxToBuffer]
+	log.Debug("scanner.read:iop.RecordType = %+v", iop.RecordType)
+
 	// Scan direction
 	direction := iop.Limit.Direction
+	log.Debug("scanner.read:direction = %+v", direction)
 
 	// Set the result set size based on defined limits
 	var limitBytes int32
@@ -326,6 +342,10 @@ func (r *Reader) read(iop *IOPlan) ([]byte, error) {
 				fp,
 				limitBytes,
 				readBuffer)
+			log.Debug("scanner.read:resultBuffer = %+v", resultBuffer)
+			log.Debug("scanner.read:finished = %+v", finished)
+			log.Debug("scanner.read:err = %+v", err)
+
 			if iop.RecordType == utilsio.VARIABLE {
 				// If we've added data to the buffer from this file, record it for possible later use
 				if len(resultBuffer) > dataLen {

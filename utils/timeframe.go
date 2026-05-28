@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/alpacahq/marketstore/v4/utils/log"
 )
 
 const (
@@ -114,7 +116,7 @@ func TimeframeFromDuration(tf time.Duration) *Timeframe {
 
 type CandleDuration struct {
 	String     string
-	duration   time.Duration
+	duration   time.Duration  // in nanoseconds
 	suffix     string
 	multiplier int
 }
@@ -197,17 +199,20 @@ func (cd *CandleDuration) Ceil(ts time.Time) time.Time {
 }
 
 func (cd *CandleDuration) QueryableTimeframe() string {
-	if cd.suffix != "M" {
-		for i := len(Timeframes) - 1; i >= 0; i-- {
-			if cd.duration%Timeframes[i].Duration == time.Duration(0) {
-				return Timeframes[i].String
-			}
+	log.Debug("QueryableTimeframe():cd = %+v", cd)
+	for i := len(Timeframes) - 1; i >= 0; i-- {
+		if cd.duration%Timeframes[i].Duration == time.Duration(0) {
+			return Timeframes[i].String
 		}
 	}
+
+	// default to 1D if not found
 	return "1D"
 }
 
 func (cd *CandleDuration) QueryableNrecords(tf string, nrecords int) int {
+	log.Debug("QueryableNrecords(tf=%s, nrecords=%d)", tf, nrecords)
+
 	const maxNumDaysInMonth = 31
 	if cd.String == tf {
 		return nrecords

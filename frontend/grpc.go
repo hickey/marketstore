@@ -41,7 +41,7 @@ func NewGRPCService(rootDir string, catDir *catalog.Directory, aggRunner *sqlpar
 }
 
 func (s GRPCService) Query(_ context.Context, reqs *proto.MultiQueryRequest) (*proto.MultiQueryResponse, error) {
-	log.Debug("Query(%+v)", reqs)
+	log.Debug("grpc.Query(%+v)", reqs)
 
 	response := proto.MultiQueryResponse{}
 	response.Version = utils.GitHash
@@ -93,9 +93,9 @@ func (s GRPCService) Query(_ context.Context, reqs *proto.MultiQueryRequest) (*p
 			Timeframe := dest.GetItemInCategory("Timeframe")
 			Symbols := dest.GetMultiItemInCategory("Symbol")
 
-			log.Debug("Query::RecordFormat = %+v", RecordFormat)
-			log.Debug("Query::TimeFrame = %+v", Timeframe)
-			log.Debug("Query::Symbols = %+v", Symbols)
+			log.Debug("grpc.Query::RecordFormat = %+v", RecordFormat)
+			log.Debug("grpc.Query::TimeFrame = %+v", Timeframe)
+			log.Debug("grpc.Query::Symbols = %+v", Symbols)
 
 			if len(Timeframe) == 0 || len(RecordFormat) == 0 || len(Symbols) == 0 {
 				return nil, fmt.Errorf("destinations must have a Symbol, Timeframe and AttributeGroup, have: %s",
@@ -154,7 +154,10 @@ func (s GRPCService) Query(_ context.Context, reqs *proto.MultiQueryRequest) (*p
 			*/
 			var nmds *io.NumpyMultiDataset
 			for tbk, cs := range csm {
+				log.Debug("grpc.Query:tbk = %+v", tbk)
+				log.Debug("grpc.Query:cs = %+v", cs)
 				nds, err := io.NewNumpyDataset(cs)
+
 				if err != nil {
 					return nil, err
 				}
@@ -172,6 +175,7 @@ func (s GRPCService) Query(_ context.Context, reqs *proto.MultiQueryRequest) (*p
 					}
 				}
 			}
+			log.Debug("grpc.Query:nmds = %+v", nmds)
 
 			/*
 				Append the NumpyMultiDataset to the MultiResponse

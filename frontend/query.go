@@ -230,6 +230,8 @@ func (s *DataService) executeQuery(req *QueryRequest) (*QueryResponse, error) {
 	*/
 	var nmds *io.NumpyMultiDataset
 	for tbk, cs := range csm {
+		log.Debug("DataService.Query:tbk = %+v", tbk)
+		log.Debug("DataService.Query:cs = %+v", cs)
 		nds, err2 := io.NewNumpyDataset(cs)
 		if err != nil {
 			return nil, err2
@@ -249,6 +251,7 @@ func (s *DataService) executeQuery(req *QueryRequest) (*QueryResponse, error) {
 		}
 	}
 
+	log.Debug("DataService.Query:nmds = %+v", nmds)
 	return &QueryResponse{nmds}, nil
 }
 
@@ -310,12 +313,16 @@ func (qs *QueryService) ExecuteQuery(tbk *io.TimeBucketKey, start, end time.Time
 		Alter timeframe inside key to ensure it matches a queryable TF
 	*/
 
+	log.Debug("ExecuteQuery(tbk=%+v, start=%+v, end=%+v)", tbk, start, end)
+
 	tf := tbk.GetItemInCategory("Timeframe")
+	log.Debug("ExecuteQuery:tf = %+v", tf)
 	cd, err := utils.CandleDurationFromString(tf)
 	if err != nil {
 		return nil, fmt.Errorf("timeframe not found in TimeBucketKey=%s: %w", tbk.String(), err)
 	}
 	queryableTimeframe := cd.QueryableTimeframe()
+	log.Debug("ExecuteQuery:queryableTimeframe = %+v", queryableTimeframe)
 	tbk.SetItemInCategory("Timeframe", queryableTimeframe)
 	query.AddTargetKey(tbk)
 
@@ -335,6 +342,8 @@ func (qs *QueryService) ExecuteQuery(tbk *io.TimeBucketKey, start, end time.Time
 
 	query.SetRange(start, end)
 	parseResult, err := query.Parse()
+	log.Debug("ExecuteQuery:parseResult = %+v", parseResult)
+
 	if err != nil {
 		// No results from query
 		if err.Error() == "no files returned from query parse" {
@@ -346,17 +355,20 @@ func (qs *QueryService) ExecuteQuery(tbk *io.TimeBucketKey, start, end time.Time
 		return nil, err
 	}
 	scanner, err := executor.NewReader(parseResult)
+	// log.Debug("ExecuteQuery:scanner = %+v", scanner)
 	if err != nil {
 		log.Error("Unable to create scanner: %s\n", err)
 		return nil, err
 	}
 	csm, err := scanner.Read()
+	log.Debug("ExecuteQuery:csm = %+v", csm)
 	if err != nil {
 		log.Error("Error returned from query scanner: %s\n", err)
 		return nil, err
 	}
 
 	csm.FilterColumns(columns)
+	log.Debug("ExecuteQuery:csm = %+v", csm)
 
 	return csm, err
 }

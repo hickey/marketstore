@@ -8,6 +8,7 @@ import (
 
 	"github.com/alpacahq/marketstore/v4/utils"
 	"github.com/alpacahq/marketstore/v4/utils/io"
+	"github.com/alpacahq/marketstore/v4/utils/log"
 )
 
 const colonSeparatedPartsLen = 2 // expecting a key string like "TSLA/1Min/OHLCV:Symbol/Timeframe/AttributeGroup"
@@ -36,6 +37,7 @@ type MultiServerResponse struct {
 func (s *DataService) Write(_ *http.Request, reqs *MultiWriteRequest, response *MultiServerResponse) (err error) {
 	for _, req := range reqs.Requests {
 		csm, err := req.Data.ToColumnSeriesMap()
+		log.Debug("Write():csm = %+v", csm)
 		if err != nil {
 			response.appendResponse(err)
 			continue

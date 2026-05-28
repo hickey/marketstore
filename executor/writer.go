@@ -262,6 +262,8 @@ func WriteBufferToFileIndirect(fp stdio.ReadWriteSeeker, buffer wal.OffsetIndexB
 func (w *Writer) WriteCSM(csm io.ColumnSeriesMap, isVariableLength bool) error {
 	start := time.Now()
 	for tbk, cs := range csm {
+		log.Debug("WriteCSM: tbk = %+v", tbk)
+		log.Debug("WriteCSM: cs = %+v", cs)
 		tf, err := tbk.GetTimeFrame()
 		if err != nil {
 			return err
@@ -347,6 +349,9 @@ func (w *Writer) WriteCSM(csm io.ColumnSeriesMap, isVariableLength bool) error {
 			return fmt.Errorf("convert column series to row series. tbk=%s: %w", tbk, err)
 		}
 		rowData := rs.GetData()
+		log.Debug("WriteCSM:rowData = %+v", rowData)
+		log.Debug("WriteCSM:tbi = %+v", tbi)
+		log.Debug("WriteCSM:times = %+v", times)
 		err = w.WriteRecords(times, rowData, dbDSV, tbi)
 		if err != nil {
 			return fmt.Errorf("write records to %v: %w", tbi, err)
