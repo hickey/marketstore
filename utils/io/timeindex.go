@@ -15,7 +15,7 @@ func IndexToTime(index int64, tf time.Duration, year int16) time.Time {
 		1, 0, 0, 0, 0,
 		utils.InstanceConfig.Timezone)
 	if tf == utils.Day {
-		return t0.AddDate(0, 0, int(index))
+		return t0.AddDate(0, 0, int(index-1))
 	}
 	return t0.Add(tf * time.Duration(index-1))
 }
@@ -33,7 +33,7 @@ func TimeToIndex(t time.Time, tf time.Duration) int64 {
 	tLocal := ToSystemTimezone(t)
 	// special 1D case (maximum supported on-disk size)
 	if tf == utils.Day {
-		return int64(tLocal.YearDay() - 1)
+		return int64(tLocal.YearDay())   // Jan 1 = 1, never 0
 	}
 	return 1 + tLocal.Sub(
 		time.Date(
