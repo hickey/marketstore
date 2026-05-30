@@ -29,7 +29,7 @@ const (
 	elementNameHeaderBytes = 32   // 32bytes per element
 	maxNumElements         = 1024 // max number of elements in a bucket
 	reservedHeader2Bytes   = 365
-	Headersize             = 37024
+	Headersize             = 37008  // orig value of 37024 was skipping over first record
 	FileinfoVersion        = int64(2.0)
 	epochLenBytes          = 8
 )
